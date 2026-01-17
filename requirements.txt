@@ -4,7 +4,7 @@ djangorestframework-simplejwt==5.3.1
 psycopg2-binary==2.9.10
 dj-database-url==2.2.0
 python-decouple==3.8
-corsheaders==4.1.0
+django-cors-headers==4.1.0
 Pillow==12.1.0
 google-genai==1.59.0
 celery==5.5.4
@@ -12,3 +12,6 @@ django-celery-beat==2.7.0
 redis==5.0.1
 python-dotenv==1.2.1
 stripe==14.2.0
+channels==4.2.0
+channels-redis==4.2.0
+daphne==4.1.2
