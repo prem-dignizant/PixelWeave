@@ -9,13 +9,23 @@ class Base(models.Model):
     class Meta:
         abstract = True
 
+STATUS_CHOICES = [
+    ('PENDING', 'Pending'),
+    ('PROCESSING', 'Processing'),
+    ('COMPLETED', 'Completed'),
+    ('FAILED', 'Failed'),
+]
 class Wardrobe(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='wardrobe')
     image = models.ImageField(upload_to='wardrobe/',null=True,blank=True)
     bg_color = models.CharField(max_length=128,null=True,blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    error_message = models.TextField(null=True, blank=True)
 
 class Studio(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='studio')
     wardrobe = models.ForeignKey(Wardrobe, on_delete=models.CASCADE,related_name='studio',null=True,blank=True)
     image = models.ImageField(upload_to='images/',null=True,blank=True)  
     mockup = models.ImageField(upload_to='mockups/',null=True,blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    error_message = models.TextField(null=True, blank=True)

@@ -59,3 +59,19 @@ class User(AbstractBaseUser, PermissionsMixin, Base):
     def __str__(self):
         return self.user_name or ""
 
+
+class Payment(Base):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('COMPLETED', 'Completed'),
+        ('FAILED', 'Failed'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+    stripe_session_id = models.CharField(max_length=255, unique=True)
+    amount = models.IntegerField(help_text="Amount in cents")
+    credits = models.IntegerField(help_text="Credits purchased")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    
+    def __str__(self):
+        return f"Payment {self.stripe_session_id} - {self.user.user_name} - {self.status}"

@@ -32,6 +32,7 @@ if ENVIRONMENT == 'local':
     ALLOWED_HOSTS = ['*']
     CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://192.168.1.113:3000",
 ]
 else:
     ALLOWED_HOSTS = ['*']
@@ -65,6 +66,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['https://f6f8a76e427b.ngrok-free.app']
 
 ROOT_URLCONF = 'pixelweave_app.urls'
 
@@ -98,6 +100,13 @@ DATABASES = {
     )
 }
 
+if ENVIRONMENT == 'production':
+    # Celery Configuration
+    CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://localhost:6379/0')
+    CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
+else:
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -180,3 +189,9 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+# Stripe Configuration
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+CREDIT_PER_DOLLAR = int(config('CREDIT_PER_DOLLAR', default=10))

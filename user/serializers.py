@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User, Payment
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -42,6 +42,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
             is_active=True,
+            credit = 5
         )
         
         return user
@@ -84,3 +85,16 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['user_id', 'user_name', 'email', 'first_name', 'last_name', 'credit', 'is_active',  'created']
         read_only_fields = ['user_id', 'credit', 'created']
+
+
+class CreateCheckoutSessionSerializer(serializers.Serializer):
+    """Serializer for creating Stripe checkout session"""
+    amount = serializers.IntegerField()
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    """Serializer for Payment model"""
+    class Meta:
+        model = Payment
+        fields = ['id', 'user', 'stripe_session_id', 'amount', 'credits', 'status', 'created', 'modified']
+        read_only_fields = ['id', 'user', 'created', 'modified']

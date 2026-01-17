@@ -8,8 +8,14 @@ import json
 
 
 def build_studio_prompt(params: dict) -> str:
-    # Base instruction
-    instruction = "Create a professional fashion model photoshoot using the garment from the reference image and given parameters."
+    instruction = """Extract the garment from the reference image (whether worn by a person or standalone).
+
+    Preserve EXACTLY: design, patterns, colors, logos, text, branding, fabric texture, proportions, and all details (buttons, zippers, pockets, stitching, embellishments).
+
+    Create a professional fashion photoshoot with this identical garment on a model matching the specified parameters.
+
+    CRITICAL: Do NOT modify the garment's colors, patterns, or design elements. It must be identical to the reference image.
+    """
     
     # Clean nested parameters - remove None/empty values recursively
     def clean_dict(d):
@@ -46,7 +52,7 @@ def build_wardrobe_prompt(params:dict)-> str:
     - No AI artifacts or distortions
 
     The final image should look like it was captured during a professional clothing brand photoshoot.
-    """
+"""
 
     return full_prompt
 
@@ -133,7 +139,7 @@ parameters = {
 # Generate the image
 if __name__ == "__main__":
     generate_fashion_image(
-        type = "wardrobe", 
+        type = "studio", 
         input_image_path=r"c:\Users\Planet\Downloads\person_yellow_tshirt.jpg",
         params=parameters,
         output_path="transformed_image_4.png"
