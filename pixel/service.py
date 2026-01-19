@@ -1,10 +1,10 @@
 from google import genai
 from PIL import Image
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import os
 import json
 
-# load_dotenv()
+load_dotenv()
 
 
 def build_studio_prompt(params: dict) -> str:
@@ -139,7 +139,7 @@ parameters = {
 # Generate the image
 if __name__ == "__main__":
     generate_fashion_image(
-        type = "studio", 
+        type = "wardrobe", 
         input_image_path=r"c:\Users\Planet\Downloads\person_yellow_tshirt.jpg",
         params=parameters,
         output_path="transformed_image_4.png"

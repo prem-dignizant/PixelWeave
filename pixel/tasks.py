@@ -5,9 +5,12 @@ from .service import generate_fashion_image
 import os
 import tempfile
 import logging
-from dotenv import load_dotenv
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.db.models import F
 from user.models import User
+from dotenv import load_dotenv
+
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -46,11 +49,43 @@ def generate_wardrobe_image_task(wardrobe_id, temp_input_path, bg_color):
             wardrobe.status = 'COMPLETED'
             wardrobe.save()
             User.objects.filter(user_id=wardrobe.user.user_id).update(credit=F('credit') - 2)
+
+            # Send WebSocket notification
+            # channel_layer = get_channel_layer()
+            # async_to_sync(channel_layer.group_send)(
+            #     'pixel_notifications_group',
+            #     {
+            #         'type': 'send_user_message',
+            #         'user_id': str(wardrobe.user.user_id),
+            #         'data': {
+            #             'type': 'wardrobe_generation',
+            #             'status': 'COMPLETED',
+            #             'wardrobe_id': wardrobe.id,
+            #             'image_url': wardrobe.image.url
+            #         }
+            #     }
+            # )
         except Exception as e:
             logger.error(f"Error generating image for Wardrobe {wardrobe_id}: {str(e)}")
             wardrobe.status = 'FAILED'
             wardrobe.error_message = str(e)
             wardrobe.save()
+            
+            # Send WebSocket notification
+            # channel_layer = get_channel_layer()
+            # async_to_sync(channel_layer.group_send)(
+            #     'pixel_notifications_group',
+            #     {
+            #         'type': 'send_user_message',
+            #         'user_id': str(wardrobe.user.user_id),
+            #         'data': {
+            #             'type': 'wardrobe_generation',
+            #             'status': 'FAILED',
+            #             'wardrobe_id': wardrobe.id,
+            #             'error': str(e)
+            #         }
+            #     }
+            # )
             
         finally:
             # Clean up temporary output file
@@ -110,11 +145,43 @@ def generate_studio_mockup_task(studio_id, temp_input_path, parameters):
             studio.save()
             User.objects.filter(user_id=studio.user.user_id).update(credit=F('credit') - 2)
 
+            # Send WebSocket notification
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'pixel_notifications_group',
+                {
+                    'type': 'send_user_message',
+                    'user_id': str(studio.user.user_id),
+                    'data': {
+                        'type': 'studio_generation',
+                        'status': 'COMPLETED',
+                        'studio_id': studio.id,
+                        'image_url': studio.mockup.url
+                    }
+                }
+            )
+
         except Exception as e:
             logger.error(f"Error generating mockup for Studio {studio_id}: {str(e)}")
             studio.status = 'FAILED'
             studio.error_message = str(e)
             studio.save()
+
+            # Send WebSocket notification
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'pixel_notifications_group',
+                {
+                    'type': 'send_user_message',
+                    'user_id': str(studio.user.user_id),
+                    'data': {
+                        'type': 'studio_generation',
+                        'status': 'FAILED',
+                        'studio_id': studio.id,
+                        'error': str(e)
+                    }
+                }
+            )
             
         finally:
             # Clean up temporary output file

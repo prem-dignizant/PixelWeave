@@ -33,6 +33,7 @@ if ENVIRONMENT == 'local':
     CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://192.168.1.113:3000",
+    # "https://triseptate-photometrically-elyse.ngrok-free.dev",
 ]
 else:
     ALLOWED_HOSTS = ['*']
@@ -41,6 +42,8 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,8 +68,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['https://f6f8a76e427b.ngrok-free.app']
+# CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['https://2f07f8e6e255.ngrok-free.app']
 
 ROOT_URLCONF = 'pixelweave_app.urls'
 
@@ -86,6 +89,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pixelweave_app.wsgi.application'
+ASGI_APPLICATION = 'pixelweave_app.asgi.application'
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -107,6 +111,15 @@ if ENVIRONMENT == 'production':
 else:
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
